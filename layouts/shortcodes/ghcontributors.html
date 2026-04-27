@@ -1,0 +1,59 @@
+<style type="text/css">
+  .ghContributors {
+    display: flex;
+    flex-flow: wrap;
+    align-content: flex-start;
+  }
+
+  .ghContributors > div {
+    width: 50%;
+    display: inline-flex;
+    margin-bottom: 5px;
+  }
+  .ghContributors > div label {
+    padding-left: 4px;
+  }
+  .ghContributors > div span {
+    font-size: x-small;
+    padding-left: 4px;
+  }
+</style>
+
+<div class="ghContributors">
+  {{/* 1. Lấy URL từ tham số của shortcode (ví dụ {{< ghcontributors "URL" >}}) */}}
+  {{ $url := .Get 0 }}
+  
+  {{/* 2. Gọi API GitHub bằng phương thức mới của Hugo */}}
+  {{ $res := resources.GetRemote $url }}
+  
+  {{ with $res }}
+    {{ if .Error }}
+      <p>Error loading contributors: {{ .Error }}</p>
+    {{ else }}
+      {{/* 3. Giải mã dữ liệu JSON và bắt đầu vòng lặp range */}}
+      {{ $contributors := .Content | transform.Unmarshal }}
+      
+      {{ range $contributors }}
+      <div>
+        <img
+          src="{{ .avatar_url }}"
+          class="inline"
+          width="32"
+          height="32"
+          style="
+            height: 32px;
+            width: 32px;
+            margin-bottom: 0.25em;
+            vertical-align: middle;
+          "
+        />
+        <label><a href="{{ .html_url }}">@{{ .login }}</a></label>
+        <span class="contributions">{{ .contributions }} commits</span>
+      </div>
+      {{ end }} {{/* Kết thúc vòng lặp range */}}
+      
+    {{ end }}
+  {{ else }}
+    <p>Unable to fetch data from GitHub API.</p>
+  {{ end }}
+</div>
