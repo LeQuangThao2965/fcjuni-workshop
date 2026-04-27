@@ -39,7 +39,7 @@ jobs:
         run: hugo --minify #Lệnh để build website, đọc tất cả file markdown, template và tối ưu hóa với --minify
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-pages-artifact@v3
         with:
           name: github-pages
           path: ./public
